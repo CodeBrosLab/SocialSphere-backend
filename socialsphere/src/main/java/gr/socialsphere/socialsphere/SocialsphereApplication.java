@@ -13,6 +13,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.time.LocalDateTime;
+
 @SpringBootApplication
 @EnableTransactionManagement
 public class SocialsphereApplication implements CommandLineRunner {
@@ -43,11 +45,14 @@ public class SocialsphereApplication implements CommandLineRunner {
 
 		// Set the User as the creator of the Post
 		post.setCreator(user);
+		post.setDate(LocalDateTime.now());
 		postRepository.save(post);
 		// postRepository.flush();
 
 		// Set the User and Post for the Comment
 		comment.setUserCommented(user);
+		comment.setContent("Good job!");
+		comment.setDate(LocalDateTime.now());
 		comment.setPost(post);
 		commentRepository.save(comment);
 	}
