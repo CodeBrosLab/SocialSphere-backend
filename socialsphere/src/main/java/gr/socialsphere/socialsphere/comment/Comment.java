@@ -1,48 +1,44 @@
 package gr.socialsphere.socialsphere.comment;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import gr.socialsphere.socialsphere.post.Post;
 import gr.socialsphere.socialsphere.user.User;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
 public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comment_seq")
-    @SequenceGenerator(name = "comment_seq", sequenceName = "comment_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long commentId;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
+    @JsonBackReference
     private Post post;
 
     @Column(name = "date")
-    private String date;
+    private LocalDateTime date;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User userCommented;
 
     @Column(name = "content")
     private String content;
 
-    public Comment(Long commentId, Post post, String date, User userCommented, String content) {
+    public Comment() {}
+
+    public Comment(Long commentId, Post post, LocalDateTime date, User userCommented, String content) {
         this.commentId = commentId;
         this.post = post;
         this.date = date;
         this.userCommented = userCommented;
         this.content = content;
-    }
-
-    public Comment() {
-        this.commentId = 1L;
-        this.post = new Post();
-        this.date = LocalDate.now().toString();
-        this.userCommented = new User();
-        this.content = "random comment";
     }
 
     public Long getCommentId() {
@@ -61,11 +57,11 @@ public class Comment {
         this.post = post;
     }
 
-    public String getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

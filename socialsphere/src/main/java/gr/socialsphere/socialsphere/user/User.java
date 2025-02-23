@@ -1,5 +1,6 @@
 package gr.socialsphere.socialsphere.user;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import gr.socialsphere.socialsphere.post.Post;
 import jakarta.persistence.*;
 
@@ -10,8 +11,7 @@ import java.util.List;
 @Table(name="users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
-    @SequenceGenerator(name = "user_seq", sequenceName = "user_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
 
@@ -25,6 +25,7 @@ public class User {
     private String profileName;
 
     @OneToMany(mappedBy = "creator")
+    @JsonManagedReference
     private List<Post> posts;
 
     @ManyToMany
@@ -35,13 +36,10 @@ public class User {
     )
     private List<User> followers;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_following",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "following_id")
-    )
+    @ManyToMany(mappedBy = "followers")
     private List<User> following;
+
+    public User() {}
 
     public User(Long id, String email, String password, String profileName, List<Post> posts, List<User> followers, List<User> following) {
         this.userId = id;
@@ -51,16 +49,6 @@ public class User {
         this.posts = posts;
         this.followers = followers;
         this.following = following;
-    }
-
-    public User() {
-        this.userId = 1L;
-        this.email = "test@example.com";
-        this.password = "random";
-        this.profileName = "testUser";
-        this.posts = new ArrayList<Post>();
-        this.followers = new ArrayList<User>();
-        this.following = new ArrayList<User>();
     }
 
     public Long getUserId() {

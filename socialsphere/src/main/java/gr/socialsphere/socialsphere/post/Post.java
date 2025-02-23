@@ -1,10 +1,13 @@
 package gr.socialsphere.socialsphere.post;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import gr.socialsphere.socialsphere.comment.Comment;
 import gr.socialsphere.socialsphere.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +15,7 @@ import java.util.List;
 @Table(name = "posts")
 public class Post {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "post_seq")
-    @SequenceGenerator(name = "post_seq", sequenceName = "post_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
     private Long postId;
 
@@ -27,10 +29,11 @@ public class Post {
     private String imageUrl;
 
     @Column(name = "date")
-    private String date;
+    private LocalDateTime date;
 
-    @JoinColumn(name = "user_id")
     @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User creator;
 
     @ManyToMany
@@ -40,11 +43,13 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> usersLiked;
 
-    @JoinColumn(name = "comment_id")
-    @OneToMany
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Comment> comments;
 
-    public Post(Long postId, String title, String description, String imageUrl, String date, User creator, List<User> usersLiked, List<Comment> comments) {
+    public Post() {}
+
+    public Post(Long postId, String title, String description, String imageUrl, LocalDateTime date, User creator, List<User> usersLiked, List<Comment> comments) {
         this.postId = postId;
         this.title = title;
         this.description = description;
@@ -53,17 +58,6 @@ public class Post {
         this.creator = creator;
         this.usersLiked = usersLiked;
         this.comments = comments;
-    }
-
-    public Post() {
-        this.postId = 1L;
-        this.title = "random";
-        this.description = "random";
-        this.imageUrl = "random";
-        this.date = LocalDate.now().toString();
-        this.creator = new User();
-        this.usersLiked = new ArrayList<User>();
-        this.comments = new ArrayList<Comment>();
     }
 
     public Long getPostId() {
@@ -98,11 +92,11 @@ public class Post {
         this.imageUrl = imageUrl;
     }
 
-    public String getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
