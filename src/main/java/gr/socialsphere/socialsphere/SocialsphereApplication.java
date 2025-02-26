@@ -2,6 +2,7 @@ package gr.socialsphere.socialsphere;
 
 import gr.socialsphere.socialsphere.comment.Comment;
 import gr.socialsphere.socialsphere.comment.CommentRepository;
+import gr.socialsphere.socialsphere.hashtag.Hashtag;
 import gr.socialsphere.socialsphere.post.Post;
 import gr.socialsphere.socialsphere.post.PostRepository;
 import gr.socialsphere.socialsphere.user.User;
@@ -37,6 +38,9 @@ public class SocialsphereApplication implements CommandLineRunner {
 		User user = new User();
 		Post post = new Post();
 		Comment comment = new Comment();
+		Hashtag hashtag = new Hashtag();
+
+		hashtag.setName("#Thanos");
 
 		user.setEmail("random@example.com");
 		// Save the User first
@@ -55,5 +59,21 @@ public class SocialsphereApplication implements CommandLineRunner {
 		comment.setDate(LocalDateTime.now());
 		comment.setPost(post);
 		commentRepository.save(comment);
+
+		/* Testing follow methods*/
+		User andreas = new User();
+		User thanos = new User();
+		User dimitris = new User();
+		andreas.setEmail("andreas@uom.edu.gr");
+		thanos.setEmail("thanos@uom.edu.gr");
+		dimitris.setEmail("dimitris@uom.edu.gr");
+
+		andreas.follow(thanos);
+		thanos.follow(dimitris);
+		andreas.unfollow(thanos);
+
+		userRepository.save(andreas);
+		userRepository.save(thanos);
+		userRepository.save(dimitris);
 	}
 }

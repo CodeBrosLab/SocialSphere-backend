@@ -1,12 +1,10 @@
 package gr.socialsphere.socialsphere.post;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import gr.socialsphere.socialsphere.comment.Comment;
+import gr.socialsphere.socialsphere.hashtag.Hashtag;
 import gr.socialsphere.socialsphere.user.User;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +31,6 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonBackReference
     private User creator;
 
     @ManyToMany
@@ -44,20 +41,32 @@ public class Post {
     private List<User> usersLiked;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Comment> comments;
 
-    public Post() {}
+    @ManyToMany
+    @JoinTable(
+            name = "post_hashtags",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "hashtag_name"))
+    private List<Hashtag> hashtags;
 
-    public Post(Long postId, String title, String description, String imageUrl, LocalDateTime date, User creator, List<User> usersLiked, List<Comment> comments) {
-        this.postId = postId;
+    public Post() {
+        this.title = "";
+        this.description = "";
+        this.imageUrl = "";
+        this.date = LocalDateTime.now();
+        this.usersLiked = new ArrayList<User>();
+        this.comments = new ArrayList<Comment>();
+    }
+
+    public Post(String title, String description, String imageUrl, LocalDateTime date, User creator) {
         this.title = title;
         this.description = description;
         this.imageUrl = imageUrl;
         this.date = date;
         this.creator = creator;
-        this.usersLiked = usersLiked;
-        this.comments = comments;
+        this.usersLiked = new ArrayList<>();
+        this.comments = new ArrayList<>();
     }
 
     public Long getPostId() {

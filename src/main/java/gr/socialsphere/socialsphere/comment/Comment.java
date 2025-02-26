@@ -17,7 +17,6 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "post_id")
-    @JsonBackReference
     private Post post;
 
     @Column(name = "date")
@@ -25,16 +24,18 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonBackReference
     private User userCommented;
 
     @Column(name = "content")
     private String content;
 
-    public Comment() {}
+    public Comment() {
+        // The other attributes have their default values...
+        this.date = LocalDateTime.now();
+        this.content = "";
+    }
 
-    public Comment(Long commentId, Post post, LocalDateTime date, User userCommented, String content) {
-        this.commentId = commentId;
+    public Comment(Post post, LocalDateTime date, User userCommented, String content) {
         this.post = post;
         this.date = date;
         this.userCommented = userCommented;

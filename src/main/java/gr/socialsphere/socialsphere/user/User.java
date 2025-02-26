@@ -13,7 +13,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long userId;
+    private Long userId; // We do not provide this to the constructors, because JPA create this from the db
 
     @Column(name = "email")
     private String email;
@@ -25,7 +25,6 @@ public class User {
     private String profileName;
 
     @OneToMany(mappedBy = "creator")
-    @JsonManagedReference
     private List<Post> posts;
 
     @ManyToMany
@@ -39,16 +38,39 @@ public class User {
     @ManyToMany(mappedBy = "followers")
     private List<User> following;
 
-    public User() {}
+    public User() {
+        this.profileName = "";
+        this.email = "";
+        this.password = "";
+        this.posts = new ArrayList<>();
+        this.followers = new ArrayList<>();
+        this.following = new ArrayList<>();
 
-    public User(Long id, String email, String password, String profileName, List<Post> posts, List<User> followers, List<User> following) {
-        this.userId = id;
+    }
+
+    public User(String email, String password, String profileName, List<Post> posts) {
         this.email = email;
         this.password = password;
         this.profileName = profileName;
         this.posts = posts;
-        this.followers = followers;
-        this.following = following;
+        this.followers = new ArrayList<>();
+        this.following = new ArrayList<>();
+    }
+
+    /*When this user follows another user */
+    public void follow(User aUser) {
+        if (!this.following.contains(aUser)) {
+            this.following.add(aUser);
+            aUser.getFollowers().add(this);
+        }
+    }
+
+    /* When this user no longer follows another user */
+    public void unfollow(User aUser) {
+        if (this.following.contains(aUser)) {
+            this.following.remove(aUser);
+            aUser.getFollowers().remove(this);
+        }
     }
 
     public Long getUserId() {
