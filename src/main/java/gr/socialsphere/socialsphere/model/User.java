@@ -55,6 +55,11 @@ public class User {
         this.following = new ArrayList<>();
     }
 
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
     /*When this user follows another user */
     public void follow(User aUser) {
         if (!this.following.contains(aUser)) {

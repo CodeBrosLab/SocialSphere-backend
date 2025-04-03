@@ -1,6 +1,7 @@
 package gr.socialsphere.socialsphere;
 
 import gr.socialsphere.socialsphere.model.Comment;
+import gr.socialsphere.socialsphere.model.Hashtag;
 import gr.socialsphere.socialsphere.repository.CommentRepository;
 import gr.socialsphere.socialsphere.model.Post;
 import gr.socialsphere.socialsphere.repository.PostRepository;
@@ -37,7 +38,7 @@ public class SocialsphereApplication implements CommandLineRunner {
 		User user = new User();
 		Post post = new Post();
 		Comment comment = new Comment();
-		Post.Hashtag hashtag = new Post.Hashtag();
+		Hashtag hashtag = new Hashtag();
 
 		hashtag.setName("#Thanos");
 
