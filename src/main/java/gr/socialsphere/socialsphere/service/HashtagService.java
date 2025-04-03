@@ -1,4 +1,4 @@
-package gr.socialsphere.socialsphere.hashtag;
+package gr.socialsphere.socialsphere.service;
 
 import org.springframework.stereotype.Service;
 

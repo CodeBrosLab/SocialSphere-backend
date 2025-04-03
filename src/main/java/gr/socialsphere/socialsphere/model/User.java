@@ -1,7 +1,5 @@
-package gr.socialsphere.socialsphere.user;
+package gr.socialsphere.socialsphere.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import gr.socialsphere.socialsphere.post.Post;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;

@@ -1,5 +1,7 @@
-package gr.socialsphere.socialsphere.comment;
+package gr.socialsphere.socialsphere.service;
 
+import gr.socialsphere.socialsphere.model.Comment;
+import gr.socialsphere.socialsphere.repository.CommentRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

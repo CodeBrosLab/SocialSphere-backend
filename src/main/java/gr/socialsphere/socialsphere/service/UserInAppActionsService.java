@@ -1,5 +1,7 @@
-package gr.socialsphere.socialsphere.user;
+package gr.socialsphere.socialsphere.service;
 
+import gr.socialsphere.socialsphere.model.User;
+import gr.socialsphere.socialsphere.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

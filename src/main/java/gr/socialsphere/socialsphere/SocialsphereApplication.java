@@ -1,12 +1,11 @@
 package gr.socialsphere.socialsphere;
 
-import gr.socialsphere.socialsphere.comment.Comment;
-import gr.socialsphere.socialsphere.comment.CommentRepository;
-import gr.socialsphere.socialsphere.hashtag.Hashtag;
-import gr.socialsphere.socialsphere.post.Post;
-import gr.socialsphere.socialsphere.post.PostRepository;
-import gr.socialsphere.socialsphere.user.User;
-import gr.socialsphere.socialsphere.user.UserRepository;
+import gr.socialsphere.socialsphere.model.Comment;
+import gr.socialsphere.socialsphere.repository.CommentRepository;
+import gr.socialsphere.socialsphere.model.Post;
+import gr.socialsphere.socialsphere.repository.PostRepository;
+import gr.socialsphere.socialsphere.model.User;
+import gr.socialsphere.socialsphere.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -38,7 +37,7 @@ public class SocialsphereApplication implements CommandLineRunner {
 		User user = new User();
 		Post post = new Post();
 		Comment comment = new Comment();
-		Hashtag hashtag = new Hashtag();
+		Post.Hashtag hashtag = new Post.Hashtag();
 
 		hashtag.setName("#Thanos");
 

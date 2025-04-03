@@ -1,8 +1,5 @@
-package gr.socialsphere.socialsphere.comment;
+package gr.socialsphere.socialsphere.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import gr.socialsphere.socialsphere.post.Post;
-import gr.socialsphere.socialsphere.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
