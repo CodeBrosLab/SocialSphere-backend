@@ -17,7 +17,7 @@ public class Hashtag {
     private List<Post> posts; // Assign this to mappedBy attribute, above List<Hashtag> attribute of Hashtag class
 
     @Column(name = "count")
-    private int count; //how many posts a hashtag appears
+    private int count; //how many posts a hashtag appears, we can reset it every month
 
     public Hashtag() {
         this.name = ""; // We do not want null values

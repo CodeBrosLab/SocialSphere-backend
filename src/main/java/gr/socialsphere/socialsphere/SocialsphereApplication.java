@@ -35,30 +35,30 @@ public class SocialsphereApplication implements CommandLineRunner {
 	@Override
 	@Transactional
 	public void run(String... args) throws Exception {
-		User user = new User();
-		Post post = new Post();
-		Comment comment = new Comment();
-		Hashtag hashtag = new Hashtag();
-
-		hashtag.setName("#Thanos");
-
-		user.setEmail("random@example.com");
-		// Save the User first
-		userRepository.save(user);
-		// userRepository.flush();
-
-		// Set the User as the creator of the Post
-		post.setCreator(user);
-		post.setDate(LocalDateTime.now());
-		postRepository.save(post);
-		// postRepository.flush();
-
-		// Set the User and Post for the Comment
-		comment.setUserCommented(user);
-		comment.setContent("Good job!");
-		comment.setDate(LocalDateTime.now());
-		comment.setPost(post);
-		commentRepository.save(comment);
+//		User user = new User();
+//		Post post = new Post();
+//		Comment comment = new Comment();
+//		Hashtag hashtag = new Hashtag();
+//
+//		hashtag.setName("#Thanos");
+//
+//		user.setEmail("random@example.com");
+//		// Save the User first
+//		userRepository.save(user);
+//		// userRepository.flush();
+//
+//		// Set the User as the creator of the Post
+//		post.setCreator(user);
+//		post.setDate(LocalDateTime.now());
+//		postRepository.save(post);
+//		// postRepository.flush();
+//
+//		// Set the User and Post for the Comment
+//		comment.setUserCommented(user);
+//		comment.setContent("Good job!");
+//		comment.setDate(LocalDateTime.now());
+//		comment.setPost(post);
+//		commentRepository.save(comment);
 
 		/* Testing follow methods*/
 		User andreas = new User();
@@ -70,7 +70,7 @@ public class SocialsphereApplication implements CommandLineRunner {
 
 		andreas.follow(thanos);
 		thanos.follow(dimitris);
-		andreas.unfollow(thanos);
+		//andreas.unfollow(thanos);
 
 		userRepository.save(andreas);
 		userRepository.save(thanos);

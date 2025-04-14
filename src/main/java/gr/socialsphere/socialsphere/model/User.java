@@ -1,10 +1,16 @@
 package gr.socialsphere.socialsphere.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "userId")
 @Entity
 @Table(name="users")
 public class User {
@@ -26,6 +32,7 @@ public class User {
     private List<Post> posts;
 
     @ManyToMany
+    //@JsonManagedReference
     @JoinTable(
             name = "user_followers",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -35,6 +42,9 @@ public class User {
 
     @ManyToMany(mappedBy = "followers")
     private List<User> following;
+
+    //@kati
+   // private String displayName;
 
     public User() {
         this.profileName = "";
