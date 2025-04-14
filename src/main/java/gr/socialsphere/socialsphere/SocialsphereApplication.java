@@ -36,44 +36,48 @@ public class SocialsphereApplication implements CommandLineRunner {
 	@Transactional
 	public void run(String... args) throws Exception {
 		User user = new User();
-		Post post = new Post();
-		Comment comment = new Comment();
-		Hashtag hashtag = new Hashtag();
-
-		hashtag.setName("#Thanos");
-
-		user.setEmail("random@example.com");
-		// Save the User first
+		user.setEmail("socialsphere@gmail.com");
+		user.setPassword("password");
 		userRepository.save(user);
-		// userRepository.flush();
-
-		// Set the User as the creator of the Post
-		post.setCreator(user);
-		post.setDate(LocalDateTime.now());
-		postRepository.save(post);
-		// postRepository.flush();
-
-		// Set the User and Post for the Comment
-		comment.setUserCommented(user);
-		comment.setContent("Good job!");
-		comment.setDate(LocalDateTime.now());
-		comment.setPost(post);
-		commentRepository.save(comment);
-
-		/* Testing follow methods*/
-		User andreas = new User();
-		User thanos = new User();
-		User dimitris = new User();
-		andreas.setEmail("andreas@uom.edu.gr");
-		thanos.setEmail("thanos@uom.edu.gr");
-		dimitris.setEmail("dimitris@uom.edu.gr");
-
-		andreas.follow(thanos);
-		thanos.follow(dimitris);
-		andreas.unfollow(thanos);
-
-		userRepository.save(andreas);
-		userRepository.save(thanos);
-		userRepository.save(dimitris);
+//		User user = new User();
+//		Post post = new Post();
+//		Comment comment = new Comment();
+//		Hashtag hashtag = new Hashtag();
+//
+//		hashtag.setName("#Thanos");
+//
+//		user.setEmail("random@example.com");
+//		// Save the User first
+//		userRepository.save(user);
+//		// userRepository.flush();
+//
+//		// Set the User as the creator of the Post
+//		post.setCreator(user);
+//		post.setDate(LocalDateTime.now());
+//		postRepository.save(post);
+//		// postRepository.flush();
+//
+//		// Set the User and Post for the Comment
+//		comment.setUserCommented(user);
+//		comment.setContent("Good job!");
+//		comment.setDate(LocalDateTime.now());
+//		comment.setPost(post);
+//		commentRepository.save(comment);
+//
+//		/* Testing follow methods*/
+//		User andreas = new User();
+//		User thanos = new User();
+//		User dimitris = new User();
+//		andreas.setEmail("andreas@uom.edu.gr");
+//		thanos.setEmail("thanos@uom.edu.gr");
+//		dimitris.setEmail("dimitris@uom.edu.gr");
+//
+//		andreas.follow(thanos);
+//		thanos.follow(dimitris);
+//		andreas.unfollow(thanos);
+//
+//		userRepository.save(andreas);
+//		userRepository.save(thanos);
+//		userRepository.save(dimitris);
 	}
 }

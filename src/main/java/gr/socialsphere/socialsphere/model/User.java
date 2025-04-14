@@ -1,13 +1,17 @@
 package gr.socialsphere.socialsphere.model;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name="users")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -24,6 +28,9 @@ public class User {
 
     @OneToMany(mappedBy = "creator")
     private List<Post> posts;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @ManyToMany
     @JoinTable(
@@ -43,7 +50,13 @@ public class User {
         this.posts = new ArrayList<>();
         this.followers = new ArrayList<>();
         this.following = new ArrayList<>();
+    }
 
+    public User(String email, String password, String profileName, Role role) {
+        this.email = email;
+        this.password = password;
+        this.profileName = profileName;
+        this.role = role;
     }
 
     public User(String email, String password, String profileName, List<Post> posts) {
@@ -92,8 +105,39 @@ public class User {
         this.email = email;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(Role.USER.toString()));
+    }
+
+    @Override
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
     public void setPassword(String password) {
