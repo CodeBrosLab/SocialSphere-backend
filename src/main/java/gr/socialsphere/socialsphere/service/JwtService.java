@@ -16,7 +16,7 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    private static String secret = "GiS4cQDeqaW+2zZKa3zeeZkE9rtDHa0x/uVQ8kjsBj3AkUUl1/mkriKceNOJYZeF";
+    private static String secret = "RspEfAWWYTakoPGZPYo/9eCOhcFjHb6MEWTj4FabF1rFvYcZPKIZPz5wn2xIGbGE";
     public String extractUsername(String jwt) {
         return extractClaim(jwt, Claims::getSubject);
     }
@@ -41,10 +41,23 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24 )) // 24 hours
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 30)) // 30 minutes
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // 7 days
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         String username = extractUsername(token);

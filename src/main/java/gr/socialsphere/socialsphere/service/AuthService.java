@@ -2,10 +2,12 @@ package gr.socialsphere.socialsphere.service;
 
 import gr.socialsphere.socialsphere.dto.auth.AuthenticationRequest;
 import gr.socialsphere.socialsphere.dto.auth.AuthenticationResponse;
+import gr.socialsphere.socialsphere.dto.auth.RefreshRequest;
 import gr.socialsphere.socialsphere.dto.auth.RegisterRequest;
 import gr.socialsphere.socialsphere.model.Role;
 import gr.socialsphere.socialsphere.model.User;
 import gr.socialsphere.socialsphere.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,8 +37,9 @@ public class AuthService {
         );
 
         userRepository.save(user);
-        String jwt = jwtService.generateToken(user);
-        return new AuthenticationResponse(jwt);
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+        return new AuthenticationResponse(accessToken, refreshToken);
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -48,8 +51,35 @@ public class AuthService {
         );
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        String jwt = jwtService.generateToken(user);
-        return new AuthenticationResponse(jwt);
+
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+        return new AuthenticationResponse(accessToken, refreshToken);
     }
+
+    public AuthenticationResponse refresh(RefreshRequest request) {
+        final String refreshToken = request.getRefreshToken();
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new RuntimeException("Refresh token is missing");
+        }
+
+        final String userEmail = jwtService.extractUsername(refreshToken);
+
+        if (userEmail == null) {
+            throw new RuntimeException("Invalid refresh token");
+        }
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!jwtService.isTokenValid(refreshToken, user)) {
+            throw new RuntimeException("Refresh token is not valid");
+        }
+
+        final String newAccessToken = jwtService.generateToken(user);
+        return new AuthenticationResponse(newAccessToken, refreshToken);
+    }
+
+
 
 }
