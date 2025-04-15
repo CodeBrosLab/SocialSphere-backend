@@ -2,6 +2,7 @@ package gr.socialsphere.socialsphere.controller;
 
 import gr.socialsphere.socialsphere.dto.auth.AuthenticationRequest;
 import gr.socialsphere.socialsphere.dto.auth.AuthenticationResponse;
+import gr.socialsphere.socialsphere.dto.auth.RefreshRequest;
 import gr.socialsphere.socialsphere.dto.auth.RegisterRequest;
 import gr.socialsphere.socialsphere.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,12 @@ public class AuthController {
             @RequestBody AuthenticationRequest request
     ) {
         return ResponseEntity.ok(authService.authenticate(request));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticationResponse> refreshToken(
+            @RequestBody RefreshRequest request
+    ) {
+        return ResponseEntity.ok(authService.refresh(request));
     }
 }
