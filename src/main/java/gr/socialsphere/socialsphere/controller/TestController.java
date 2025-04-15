@@ -1,6 +1,5 @@
 package gr.socialsphere.socialsphere.controller;
 
-import gr.socialsphere.socialsphere.auth.AuthenticationResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,8 +1,8 @@
 package gr.socialsphere.socialsphere.controller;
 
-import gr.socialsphere.socialsphere.auth.AuthenticationRequest;
-import gr.socialsphere.socialsphere.auth.AuthenticationResponse;
-import gr.socialsphere.socialsphere.auth.RegisterRequest;
+import gr.socialsphere.socialsphere.dto.auth.AuthenticationRequest;
+import gr.socialsphere.socialsphere.dto.auth.AuthenticationResponse;
+import gr.socialsphere.socialsphere.dto.auth.RegisterRequest;
 import gr.socialsphere.socialsphere.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

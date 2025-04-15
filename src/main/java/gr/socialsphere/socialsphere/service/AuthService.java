@@ -1,8 +1,8 @@
 package gr.socialsphere.socialsphere.service;
 
-import gr.socialsphere.socialsphere.auth.AuthenticationRequest;
-import gr.socialsphere.socialsphere.auth.AuthenticationResponse;
-import gr.socialsphere.socialsphere.auth.RegisterRequest;
+import gr.socialsphere.socialsphere.dto.auth.AuthenticationRequest;
+import gr.socialsphere.socialsphere.dto.auth.AuthenticationResponse;
+import gr.socialsphere.socialsphere.dto.auth.RegisterRequest;
 import gr.socialsphere.socialsphere.model.Role;
 import gr.socialsphere.socialsphere.model.User;
 import gr.socialsphere.socialsphere.repository.UserRepository;
