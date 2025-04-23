@@ -29,6 +29,10 @@ public class AuthService {
     AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+        // Check if the email is already taken
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already taken");
+        }
         User user = new User(
                 request.getEmail(),
                 passwordEncoder.encode(request.getPassword()),
