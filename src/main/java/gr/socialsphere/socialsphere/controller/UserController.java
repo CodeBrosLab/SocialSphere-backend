@@ -2,6 +2,7 @@ package gr.socialsphere.socialsphere.controller;
 
 import gr.socialsphere.socialsphere.model.User;
 import gr.socialsphere.socialsphere.repository.UserRepository;
+import gr.socialsphere.socialsphere.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-
+    @Autowired
+    private UserService userService;
+  
     @Autowired
     private UserRepository userRepository;
+
+    private Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    @GetMapping("/get-user")
+    public User getUser(@RequestParam("email") String email) {
+        return userService.getUser(email);
 
     @PostMapping("/{userId}/follow/{targetUserId}")
     public ResponseEntity<String> followUser(
