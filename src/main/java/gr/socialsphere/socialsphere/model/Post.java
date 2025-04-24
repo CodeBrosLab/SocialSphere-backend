@@ -1,10 +1,6 @@
 package gr.socialsphere.socialsphere.model;
 
-import gr.socialsphere.socialsphere.model.Comment;
-import gr.socialsphere.socialsphere.model.Hashtag;
-import gr.socialsphere.socialsphere.model.User;
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,20 +51,12 @@ public class Post {
         this.description = "";
         this.imageUrl = "";
         this.date = LocalDateTime.now();
-        this.usersLiked = new ArrayList<User>();
-        this.comments = new ArrayList<Comment>();
-    }
-
-    public Post(String title, String description, String imageUrl, LocalDateTime date, User creator) {
-        this.title = title;
-        this.description = description;
-        this.imageUrl = imageUrl;
-        this.date = date;
-        this.creator = creator;
         this.usersLiked = new ArrayList<>();
         this.comments = new ArrayList<>();
+        this.hashtags = new ArrayList<>();
     }
 
+    // Getters and setters for all fields
     public Long getPostId() {
         return postId;
     }
@@ -131,5 +119,13 @@ public class Post {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    public List<Hashtag> getHashtags() {
+        return hashtags;
+    }
+
+    public void setHashtags(List<Hashtag> hashtags) {
+        this.hashtags = hashtags;
     }
 }

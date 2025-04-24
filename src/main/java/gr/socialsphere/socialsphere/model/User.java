@@ -1,5 +1,9 @@
 package gr.socialsphere.socialsphere.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "userId")
 @Entity
 @Table(name="users")
 public class User implements UserDetails {
@@ -33,6 +39,7 @@ public class User implements UserDetails {
     private Role role;
 
     @ManyToMany
+    //@JsonManagedReference
     @JoinTable(
             name = "user_followers",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -42,6 +49,9 @@ public class User implements UserDetails {
 
     @ManyToMany(mappedBy = "followers")
     private List<User> following;
+
+    //@kati
+   // private String displayName;
 
     public User() {
         this.profileName = "";
@@ -75,6 +85,9 @@ public class User implements UserDetails {
 
     /*When this user follows another user */
     public void follow(User aUser) {
+        if (this.equals(aUser))
+            throw new IllegalArgumentException("User cannot follow themselves");
+
         if (!this.following.contains(aUser)) {
             this.following.add(aUser);
             aUser.getFollowers().add(this);

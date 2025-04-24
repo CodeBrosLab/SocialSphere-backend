@@ -7,27 +7,27 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "comments")
 public class Comment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long commentId;
 
     @ManyToOne
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @Column(name = "date")
+    @Column(name = "date", nullable = false)
     private LocalDateTime date;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User userCommented;
 
-    @Column(name = "content")
+    @Column(name = "content", nullable = false)
     private String content;
 
     public Comment() {
-        // The other attributes have their default values...
         this.date = LocalDateTime.now();
         this.content = "";
     }
