@@ -25,6 +25,7 @@ public class UserController {
     @GetMapping("/get-user")
     public User getUser(@RequestParam("email") String email) {
         return userService.getUser(email);
+    }
 
     @PostMapping("/{userId}/follow/{targetUserId}")
     public ResponseEntity<String> followUser(
