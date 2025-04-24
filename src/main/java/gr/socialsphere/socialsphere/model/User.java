@@ -72,6 +72,9 @@ public class User {
 
     /*When this user follows another user */
     public void follow(User aUser) {
+        if (this.equals(aUser))
+            throw new IllegalArgumentException("User cannot follow themselves");
+
         if (!this.following.contains(aUser)) {
             this.following.add(aUser);
             aUser.getFollowers().add(this);
