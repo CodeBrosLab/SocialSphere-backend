@@ -26,6 +26,9 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "display_name")
+    private String displayName;
+
     @Column(name = "password")
     private String password; // make sure later on this is encoded...do not store plain password in db
 
@@ -57,23 +60,27 @@ public class User implements UserDetails {
         this.profileName = "";
         this.email = "";
         this.password = "";
+        this.role = Role.USER;
+        this.displayName = "";
         this.posts = new ArrayList<>();
         this.followers = new ArrayList<>();
         this.following = new ArrayList<>();
     }
 
-    public User(String email, String password, String profileName, Role role) {
+    public User(String email, String password, String profileName, String displayName, Role role) {
         this.email = email;
         this.password = password;
         this.profileName = profileName;
+        this.displayName = displayName;
         this.role = role;
     }
 
-    public User(String email, String password, String profileName, List<Post> posts) {
+    public User(String email, String password, String profileName, String displayName,List<Post> posts) {
         this.email = email;
         this.password = password;
         this.profileName = profileName;
         this.posts = posts;
+        this.displayName = displayName;
         this.followers = new ArrayList<>();
         this.following = new ArrayList<>();
     }
@@ -187,5 +194,13 @@ public class User implements UserDetails {
 
     public void setFollowing(List<User> following) {
         this.following = following;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }

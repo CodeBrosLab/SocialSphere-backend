@@ -37,6 +37,7 @@ public class AuthService {
                 request.getEmail(),
                 passwordEncoder.encode(request.getPassword()),
                 request.getProfileName(),
+                request.getDisplayName(),
                 Role.USER
         );
 
