@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @JsonIdentityInfo( generator = ObjectIdGenerators.PropertyGenerator.class,
@@ -29,6 +31,20 @@ public class User implements UserDetails {
     @Column(name = "display_name")
     private String displayName;
 
+    @Column(name = "bio")
+    private String bio;
+
+    @Column(name = "profile_image")
+    private String profileImage;
+
+    @Column(name = "location")
+    private String location;
+
+    @Column(name = "created_at", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    private Date createdAt;
+
     @Column(name = "password")
     private String password; // make sure later on this is encoded...do not store plain password in db
 
@@ -41,6 +57,15 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "skills")
+    private String skills;
+
+    @Column(name = "interests")
+    private String interests;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserLink> userLinks;
+
     @ManyToMany
     //@JsonManagedReference
     @JoinTable(
@@ -52,9 +77,6 @@ public class User implements UserDetails {
 
     @ManyToMany(mappedBy = "followers")
     private List<User> following;
-
-    //@kati
-   // private String displayName;
 
     public User() {
         this.profileName = "";
@@ -202,5 +224,69 @@ public class User implements UserDetails {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public String getSkills() {
+        return skills;
+    }
+
+    public void setSkills(String skills) {
+        this.skills = skills;
+    }
+
+    public String getInterests() {
+        return interests;
+    }
+
+    public void setInterests(String interests) {
+        this.interests = interests;
+    }
+
+    public List<UserLink> getUserLinks() {
+        return userLinks;
+    }
+
+    public void setUserLinks(List<UserLink> userLinks) {
+        this.userLinks = userLinks;
     }
 }
