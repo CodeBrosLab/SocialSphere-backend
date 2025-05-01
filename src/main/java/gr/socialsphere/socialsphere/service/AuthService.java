@@ -6,6 +6,7 @@ import gr.socialsphere.socialsphere.dto.auth.RefreshRequest;
 import gr.socialsphere.socialsphere.dto.auth.RegisterRequest;
 import gr.socialsphere.socialsphere.model.Role;
 import gr.socialsphere.socialsphere.model.User;
+import gr.socialsphere.socialsphere.model.UserLink;
 import gr.socialsphere.socialsphere.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class AuthService {
@@ -40,6 +45,18 @@ public class AuthService {
                 request.getDisplayName(),
                 Role.USER
         );
+
+        UserLink linkedInLink = new UserLink();
+        linkedInLink.setName("LinkedIn");
+
+        UserLink githubLink = new UserLink();
+        githubLink.setName("GitHub");
+        List<UserLink> userLinks = new ArrayList<>();
+        userLinks.add(linkedInLink);
+        userLinks.add(githubLink);
+        user.setUserLinks(userLinks);
+        linkedInLink.setUser(user);
+        githubLink.setUser(user);
 
         userRepository.save(user);
         String accessToken = jwtService.generateToken(user);

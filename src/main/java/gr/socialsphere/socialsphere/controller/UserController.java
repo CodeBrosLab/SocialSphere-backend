@@ -1,6 +1,10 @@
 package gr.socialsphere.socialsphere.controller;
 
+import gr.socialsphere.socialsphere.dto.UpdatePrimaryDTO;
+import gr.socialsphere.socialsphere.model.Post;
 import gr.socialsphere.socialsphere.model.User;
+import gr.socialsphere.socialsphere.model.UserLink;
+import gr.socialsphere.socialsphere.repository.UserLinkRepository;
 import gr.socialsphere.socialsphere.repository.UserRepository;
 import gr.socialsphere.socialsphere.service.UserService;
 import org.slf4j.Logger;
@@ -9,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -20,11 +26,21 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserLinkRepository userLinkRepository;
+
     private Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/get-user")
     public User getUser(@RequestParam("email") String email) {
         return userService.getUser(email);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/{userId}/follow/{targetUserId}")
@@ -70,4 +86,89 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return ResponseEntity.ok(user.getFollowing());
     }
+
+    @GetMapping("{userId}/posts")
+    public ResponseEntity<List<Post>> getUserPosts(@PathVariable Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return ResponseEntity.ok(user.getPosts());
+    }
+
+    @PutMapping("/update-primary")
+    public ResponseEntity<String> update(@RequestBody UpdatePrimaryDTO updatePrimaryDTO) {
+        // Should be extracted in a service
+        Long userId = updatePrimaryDTO.getUserId();
+        String profileName = updatePrimaryDTO.getProfileName();
+        String displayName = updatePrimaryDTO.getDisplayName();
+        String bio = updatePrimaryDTO.getBio();
+        String location = updatePrimaryDTO.getLocation();
+        List<String> interests = updatePrimaryDTO.getInterests();
+        List<String> skills = updatePrimaryDTO.getSkills();
+        String linkedIn = updatePrimaryDTO.getUserLinks().get(0).getUrl();
+        String github = updatePrimaryDTO.getUserLinks().get(1).getUrl();
+
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        existingUser.setProfileName(profileName);
+        existingUser.setDisplayName(displayName);
+        existingUser.setBio(bio);
+        existingUser.setLocation(location);
+        existingUser.setInterests(String.join(", ", interests));
+        existingUser.setSkills(String.join(", ", skills));
+
+        // Update user links
+        UserLink linkedInLink = existingUser.getUserLinks().get(0);
+        linkedInLink.setUrl(linkedIn);
+        linkedInLink.setName("LinkedIn");
+        linkedInLink.setUser(existingUser);
+
+        UserLink githubLink = existingUser.getUserLinks().get(1);
+        githubLink.setUrl(github);
+        githubLink.setName("GitHub");
+        githubLink.setUser(existingUser);
+
+
+        // Remove old links and add new ones
+        userLinkRepository.deleteAll(existingUser.getUserLinks());
+        List<UserLink> userLinks = new ArrayList<>();
+        userLinks.add(linkedInLink);
+        userLinks.add(githubLink);
+        existingUser.setUserLinks(userLinks);
+
+        userRepository.save(existingUser);
+        return ResponseEntity.ok("User info updated successfully");
+    }
+
+    @PutMapping("/{userId}/update-bio")
+    public ResponseEntity<String> updateUserBio(@PathVariable Long userId, @RequestBody String bio) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        existingUser.setBio(bio);
+        userRepository.save(existingUser);
+        return ResponseEntity.ok("User bio updated successfully");
+    }
+
+    @PutMapping("/{userId}/update-secondary-info/{type}")
+    public ResponseEntity<String> updateUserSkills(@PathVariable Long userId,
+                                                   @RequestBody List<String> skills,
+                                                   @PathVariable String type) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (type.equals("skills")) {
+            String newSkills = String.join(", ", skills);
+            existingUser.setSkills(newSkills);
+        } else if (type.equals("interests")) {
+            String newInterests = String.join(", ", skills);
+            existingUser.setInterests(newInterests);
+        } else {
+            return ResponseEntity.badRequest().body("Invalid type");
+        }
+        userRepository.save(existingUser);
+        return ResponseEntity.ok("User skills updated successfully");
+    }
+
+
 }
