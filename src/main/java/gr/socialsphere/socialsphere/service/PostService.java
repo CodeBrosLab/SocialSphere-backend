@@ -1,5 +1,6 @@
 package gr.socialsphere.socialsphere.service;
 
+import gr.socialsphere.socialsphere.dto.CommentDTO;
 import gr.socialsphere.socialsphere.dto.PostDTO;
 import gr.socialsphere.socialsphere.model.Comment;
 import gr.socialsphere.socialsphere.model.Post;
@@ -37,6 +38,8 @@ public class PostService {
         post.setCreator(creator.get());
 
         postRepository.save(post);
+        creator.get().getPosts().add(post);
+        userRepository.save(creator.get()); // Save the creator to persist the relationship
         return ResponseEntity.status(HttpStatus.CREATED).body("Post created successfully");
     }
 
@@ -86,11 +89,20 @@ public class PostService {
         if (!post.getUsersLiked().contains(user)) {
             post.getUsersLiked().add(user);
             postRepository.save(post);
+        } else {
+            post.getUsersLiked().remove(user);
+            postRepository.save(post);
         }
         return ResponseEntity.ok("Post liked successfully");
     }
 
-    public ResponseEntity<String> commentOnPost(Long postId, Long userId, String content) {
+    public ResponseEntity<String> commentOnPost(CommentDTO commentDTO) {
+        String content = commentDTO.getContent();
+        Long postId = commentDTO.getPostId();
+        Long userId = commentDTO.getUserId();
+        if (content == null || content.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Comment content cannot be empty");
+        }
         Optional<Post> postOptional = postRepository.findById(postId);
         if (postOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found");

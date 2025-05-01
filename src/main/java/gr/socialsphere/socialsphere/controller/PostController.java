@@ -1,5 +1,6 @@
 package gr.socialsphere.socialsphere.controller;
 
+import gr.socialsphere.socialsphere.dto.CommentDTO;
 import gr.socialsphere.socialsphere.dto.PostDTO;
 import gr.socialsphere.socialsphere.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ public class PostController {
 
     @PostMapping("/create")
     public ResponseEntity<String> createPost(@RequestBody PostDTO postDTO) {
+        System.out.println(postDTO);
         return postService.createPost(postDTO);
     }
 
@@ -36,12 +38,10 @@ public class PostController {
         return postService.likePost(postId, userId);
     }
 
-    @PostMapping("/{postId}/comment")
+    @PostMapping("/comment")
     public ResponseEntity<String> commentOnPost(
-            @PathVariable Long postId,
-            @RequestParam Long userId,
-            @RequestBody String content
+            @RequestBody CommentDTO commentDTO
     ) {
-        return postService.commentOnPost(postId, userId, content);
+        return postService.commentOnPost(commentDTO);
     }
 }
