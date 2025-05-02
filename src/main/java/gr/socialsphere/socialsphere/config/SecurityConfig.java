@@ -27,9 +27,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**",
+                                "/api-ui/**",
+                                "/swagger-ui/**",
+                                "/swagger-resources/*",
+                                "/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
+
                 .cors(Customizer.withDefaults())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
