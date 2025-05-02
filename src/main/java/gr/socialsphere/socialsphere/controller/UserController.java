@@ -31,6 +31,12 @@ public class UserController {
 
     private Logger logger = LoggerFactory.getLogger(UserController.class);
 
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return ResponseEntity.ok(users);
+    }
+
     @GetMapping("/get-user")
     public User getUser(@RequestParam("email") String email) {
         return userService.getUser(email);
