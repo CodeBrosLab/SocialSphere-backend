@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "posts")
@@ -41,11 +43,11 @@ public class Post {
     private List<Comment> comments;
 
     @ManyToMany
-    @JoinTable(
+    @JoinTable( //cascade persist?
             name = "post_hashtags",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "hashtag_name"))
-    private List<Hashtag> hashtags;
+    private Set<Hashtag> hashtags;
 
     public Post() {
         this.title = "";
@@ -54,7 +56,7 @@ public class Post {
         this.date = LocalDateTime.now();
         this.usersLiked = new ArrayList<>();
         this.comments = new ArrayList<>();
-        this.hashtags = new ArrayList<>();
+        this.hashtags = new HashSet<>();
     }
 
     // Getters and setters for all fields
@@ -122,11 +124,11 @@ public class Post {
         this.comments = comments;
     }
 
-    public List<Hashtag> getHashtags() {
+    public Set<Hashtag> getHashtags() {
         return hashtags;
     }
 
-    public void setHashtags(List<Hashtag> hashtags) {
+    public void setHashtags(Set<Hashtag> hashtags) {
         this.hashtags = hashtags;
     }
 }
