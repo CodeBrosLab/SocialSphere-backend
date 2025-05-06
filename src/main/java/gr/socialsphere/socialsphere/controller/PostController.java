@@ -4,9 +4,14 @@ import gr.socialsphere.socialsphere.dto.CommentDTO;
 import gr.socialsphere.socialsphere.dto.PostDTO;
 import gr.socialsphere.socialsphere.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 @RestController
 @RequestMapping("/post")
@@ -15,9 +20,15 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @PostMapping("/create")
-    public ResponseEntity<String> createPost(@RequestBody PostDTO postDTO) {
+    @GetMapping("/fetch-photo/{postId}")
+    public ResponseEntity<Resource> streamPhoto(@PathVariable Long postId) throws MalformedURLException {
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(postService.fetchPost(postId));
+    }
 
+    @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> createPost(@ModelAttribute PostDTO postDTO) throws IOException {
         if (postService.createPost(postDTO))
             return ResponseEntity.status(HttpStatus.CREATED).body("Post created successfully");
 
