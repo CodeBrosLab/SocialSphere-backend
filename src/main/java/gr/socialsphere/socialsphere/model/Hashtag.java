@@ -1,5 +1,6 @@
 package gr.socialsphere.socialsphere.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gr.socialsphere.socialsphere.model.Post;
 import jakarta.persistence.*;
 
@@ -14,6 +15,7 @@ public class Hashtag {
     private String name;
 
     @ManyToMany(mappedBy = "hashtags")
+    @JsonIgnore
     private List<Post> posts; // Assign this to mappedBy attribute, above List<Hashtag> attribute of Hashtag class
 
     @Column(name = "count")
