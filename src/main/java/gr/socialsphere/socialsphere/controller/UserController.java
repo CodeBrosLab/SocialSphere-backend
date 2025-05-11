@@ -105,7 +105,12 @@ public class UserController {
             postDTO.setCreatorId(user.getUserId());
             postDTO.setTitle(post.getTitle());
             postDTO.setDescription(post.getDescription());
-            postDTO.setStreamImageUrl("/post/fetch-photo/" + post.getPostId());
+
+            if (!post.getImageUrl().equals(""))
+                postDTO.setStreamImageUrl("/post/fetch-photo/" + post.getPostId());
+            else
+                postDTO.setStreamImageUrl("/null");
+
             return postDTO;
         }).toList();
 

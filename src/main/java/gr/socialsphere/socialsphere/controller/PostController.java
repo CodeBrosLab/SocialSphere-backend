@@ -27,8 +27,16 @@ public class PostController {
                 .body(postService.fetchPost(postId));
     }
 
-    @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> createPost(@ModelAttribute PostDTO postDTO) throws IOException {
+    @PostMapping(value = "/create-include-photo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> createPostWithPhoto(@ModelAttribute PostDTO postDTO) throws IOException {
+        if (postService.createPost(postDTO))
+            return ResponseEntity.status(HttpStatus.CREATED).body("Post created successfully");
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Creator not found");
+    }
+
+    @PostMapping(value = "/create-text-only", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<String> createPostOnlyText(@RequestBody PostDTO postDTO) throws IOException {
         if (postService.createPost(postDTO))
             return ResponseEntity.status(HttpStatus.CREATED).body("Post created successfully");
 

@@ -54,34 +54,37 @@ public class PostService {
         Post post = new Post();
         post.setTitle(postDTO.getTitle());
         post.setDescription(postDTO.getDescription());
-        // post.setImageUrl(postDTO.getImageUrl());
+        post.setImageUrl(""); // Check if a photo exists and change the path later on
         post.setDate(LocalDateTime.now());
         post.setCreator(creator.get());
 
         Set<Hashtag> hashtags = extractAndSaveHashtags(postDTO.getDescription(), post);
         post.setHashtags(hashtags);
 
-        // Get the original name of the file that user uploaded and rename it. I keep the file extension as it is
-        String profileName = post.getCreator().getProfileName();
-        String photoFilename = postDTO.getPhoto().getOriginalFilename();
-        String fileExtension = photoFilename.substring(photoFilename.lastIndexOf("."));
+        // Store the photo if exists, otherwise store a post with text only
+        if (postDTO.getPhoto() != null) {
+            // Get the original name of the file that user uploaded and rename it. I keep the file extension as it is
+            String profileName = post.getCreator().getProfileName();
+            String photoFilename = postDTO.getPhoto().getOriginalFilename();
+            String fileExtension = photoFilename.substring(photoFilename.lastIndexOf("."));
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmmss");
-        String postDate = LocalDate.now().toString() + LocalTime.now().format(formatter);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmmss");
+            String postDate = LocalDate.now().toString() + LocalTime.now().format(formatter);
 
-        photoFilename = profileName + "-" + postDate + fileExtension;
+            photoFilename = profileName + "-" + postDate + fileExtension;
 
-        // Save the file
-        String filePath = "uploads/" + profileName;
-        File userFolder = new File(filePath);
+            // Save the file
+            String filePath = "uploads/" + profileName;
+            File userFolder = new File(filePath);
 
-        // Get the photo as bytes and store it locally
-        byte[] bytes = postDTO.getPhoto().getBytes();
+            // Get the photo as bytes and store it locally
+            byte[] bytes = postDTO.getPhoto().getBytes();
 
-        File f = new File(userFolder, photoFilename);
-        Files.write(f.toPath(), bytes);
+            File f = new File(userFolder, photoFilename);
+            Files.write(f.toPath(), bytes);
 
-        post.setImageUrl(filePath + "/" + photoFilename);
+            post.setImageUrl(filePath + "/" + photoFilename);
+        }
 
         postRepository.save(post);
         creator.get().getPosts().add(post);
@@ -123,13 +126,16 @@ public class PostService {
         if (!post.getCreator().getUserId().equals(creatorId))
             return "FORBIDDEN";
 
-        // Delete the photo from the server
+        // Delete the photo from the server if exists...
         String filepath = post.getImageUrl();
         System.out.println(filepath);
-        File photoToDelete = new File(filepath);
 
-        if (photoToDelete.exists()) {
-            photoToDelete.delete();
+        // We have a photo included in the post so it has to be deleted
+        if (!filepath.equals("")) {
+            File photoToDelete = new File(filepath);
+
+            if (photoToDelete.exists())
+                photoToDelete.delete();
         }
 
         handlePostHashtagsOnDelete(post);
