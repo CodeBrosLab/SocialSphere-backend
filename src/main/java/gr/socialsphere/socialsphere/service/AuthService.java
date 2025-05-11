@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,6 +62,9 @@ public class AuthService {
         userRepository.save(user);
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
+
+        createUserFolderInServer(user.getProfileName());
+
         return new AuthenticationResponse(accessToken, refreshToken);
     }
 
@@ -103,5 +107,20 @@ public class AuthService {
     }
 
 
+    // Helper method
+    private void createUserFolderInServer(String profileName) {
+        String rootFolderAsAString = "uploads";
+        File rootFolder = new File(rootFolderAsAString);
+
+        if (!rootFolder.exists()) {
+            rootFolder.mkdir();
+        }
+
+        File userFolder = new File(rootFolder, profileName);
+
+        if (!userFolder.exists()) {
+            userFolder.mkdir();
+        }
+    }
 
 }

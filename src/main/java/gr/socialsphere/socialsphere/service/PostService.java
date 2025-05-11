@@ -11,9 +11,20 @@ import gr.socialsphere.socialsphere.repository.PostRepository;
 import gr.socialsphere.socialsphere.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -33,7 +44,7 @@ public class PostService {
     private HashtagRepository hashtagRepository;
 
     @Transactional
-    public boolean createPost(PostDTO postDTO) {
+    public boolean createPost(PostDTO postDTO) throws IOException {
 
         Optional<User> creator = userRepository.findById(postDTO.getCreatorId());
 
@@ -43,19 +54,43 @@ public class PostService {
         Post post = new Post();
         post.setTitle(postDTO.getTitle());
         post.setDescription(postDTO.getDescription());
-        post.setImageUrl(postDTO.getImageUrl());
+        // post.setImageUrl(postDTO.getImageUrl());
         post.setDate(LocalDateTime.now());
         post.setCreator(creator.get());
 
         Set<Hashtag> hashtags = extractAndSaveHashtags(postDTO.getDescription(), post);
         post.setHashtags(hashtags);
 
+        // Get the original name of the file that user uploaded and rename it. I keep the file extension as it is
+        String profileName = post.getCreator().getProfileName();
+        String photoFilename = postDTO.getPhoto().getOriginalFilename();
+        String fileExtension = photoFilename.substring(photoFilename.lastIndexOf("."));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmmss");
+        String postDate = LocalDate.now().toString() + LocalTime.now().format(formatter);
+
+        photoFilename = profileName + "-" + postDate + fileExtension;
+
+        // Save the file
+        String filePath = "uploads/" + profileName;
+        File userFolder = new File(filePath);
+
+        // Get the photo as bytes and store it locally
+        byte[] bytes = postDTO.getPhoto().getBytes();
+
+        File f = new File(userFolder, photoFilename);
+        Files.write(f.toPath(), bytes);
+
+        post.setImageUrl(filePath + "/" + photoFilename);
+
         postRepository.save(post);
         creator.get().getPosts().add(post);
         userRepository.save(creator.get());
+
         return true;
     }
 
+    // For now we cannot change the photo of the post...just details of the post
     @Transactional
     public boolean editPost(Long postId, PostDTO postDTO) {
 
@@ -67,7 +102,7 @@ public class PostService {
         Post post = existingPost.get();
         post.setTitle(postDTO.getTitle());
         post.setDescription(postDTO.getDescription());
-        post.setImageUrl(postDTO.getImageUrl());
+        // post.setImageUrl(postDTO.getImageUrl());
 
         Set<Hashtag> existingHashtags = post.getHashtags();
         Set<Hashtag> newHashtags = extractAndSaveHashtags(postDTO.getDescription(), post);
@@ -87,6 +122,15 @@ public class PostService {
         Post post = existingPost.get();
         if (!post.getCreator().getUserId().equals(creatorId))
             return "FORBIDDEN";
+
+        // Delete the photo from the server
+        String filepath = post.getImageUrl();
+        System.out.println(filepath);
+        File photoToDelete = new File(filepath);
+
+        if (photoToDelete.exists()) {
+            photoToDelete.delete();
+        }
 
         handlePostHashtagsOnDelete(post);
         postRepository.delete(post);
@@ -186,5 +230,15 @@ public class PostService {
             else
                 hashtagRepository.save(hashtag);
         }
+    }
+
+    public Resource fetchPost(Long postId) throws MalformedURLException {
+        Post post = postRepository.findById(postId).get();
+        String filepath = post.getImageUrl();
+        Path path = Paths.get(filepath).toAbsolutePath().normalize();
+
+        Resource resource = new UrlResource(path.toUri());
+
+        return resource;
     }
 }

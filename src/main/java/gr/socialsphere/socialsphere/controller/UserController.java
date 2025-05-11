@@ -1,5 +1,6 @@
 package gr.socialsphere.socialsphere.controller;
 
+import gr.socialsphere.socialsphere.dto.PostDTO;
 import gr.socialsphere.socialsphere.dto.UpdatePrimaryDTO;
 import gr.socialsphere.socialsphere.model.Post;
 import gr.socialsphere.socialsphere.model.User;
@@ -94,10 +95,21 @@ public class UserController {
     }
 
     @GetMapping("{userId}/posts")
-    public ResponseEntity<List<Post>> getUserPosts(@PathVariable Long userId) {
+    public ResponseEntity<List<PostDTO>> getUserPosts(@PathVariable Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return ResponseEntity.ok(user.getPosts());
+
+        List<Post> userPosts = user.getPosts();
+        List<PostDTO> postDTOs = userPosts.stream().map(post -> {
+            PostDTO postDTO = new PostDTO();
+            postDTO.setCreatorId(user.getUserId());
+            postDTO.setTitle(post.getTitle());
+            postDTO.setDescription(post.getDescription());
+            postDTO.setStreamImageUrl("/post/fetch-photo/" + post.getPostId());
+            return postDTO;
+        }).toList();
+
+        return ResponseEntity.ok(postDTOs);
     }
 
     @PutMapping("/update-primary")
