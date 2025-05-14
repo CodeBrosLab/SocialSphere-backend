@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -52,13 +53,12 @@ public class PostService {
             return false;
 
         Post post = new Post();
-        post.setTitle(postDTO.getTitle());
-        post.setDescription(postDTO.getDescription());
+        post.setContent(postDTO.getContent());
         post.setImageUrl(""); // Check if a photo exists and change the path later on
         post.setDate(LocalDateTime.now());
         post.setCreator(creator.get());
 
-        Set<Hashtag> hashtags = extractAndSaveHashtags(postDTO.getDescription(), post);
+        Set<Hashtag> hashtags = extractAndSaveHashtags(postDTO.getContent(), post);
         post.setHashtags(hashtags);
 
         // Store the photo if exists, otherwise store a post with text only
@@ -93,7 +93,7 @@ public class PostService {
         return true;
     }
 
-    // For now we cannot change the photo of the post...just details of the post
+    // For now, we cannot change the photo of the post...just details of the post
     @Transactional
     public boolean editPost(Long postId, PostDTO postDTO) {
 
@@ -103,12 +103,11 @@ public class PostService {
             return false;
 
         Post post = existingPost.get();
-        post.setTitle(postDTO.getTitle());
-        post.setDescription(postDTO.getDescription());
+        post.setContent(postDTO.getContent());
         // post.setImageUrl(postDTO.getImageUrl());
 
         Set<Hashtag> existingHashtags = post.getHashtags();
-        Set<Hashtag> newHashtags = extractAndSaveHashtags(postDTO.getDescription(), post);
+        Set<Hashtag> newHashtags = extractAndSaveHashtags(postDTO.getContent(), post);
         updateHashtags(existingHashtags, newHashtags, post);
 
         postRepository.save(post);
@@ -246,5 +245,9 @@ public class PostService {
         Resource resource = new UrlResource(path.toUri());
 
         return resource;
+    }
+
+    public List<Post> getAllPosts() {
+        return postRepository.findAll();
     }
 }

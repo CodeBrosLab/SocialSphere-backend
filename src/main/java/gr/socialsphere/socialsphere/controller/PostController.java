@@ -29,6 +29,8 @@ public class PostController {
 
     @PostMapping(value = "/create-include-photo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> createPostWithPhoto(@ModelAttribute PostDTO postDTO) throws IOException {
+        System.out.println("Hello");
+        System.out.println(postDTO.getContent());
         if (postService.createPost(postDTO))
             return ResponseEntity.status(HttpStatus.CREATED).body("Post created successfully");
 
@@ -80,5 +82,10 @@ public class PostController {
             case "USER_NOT_FOUND" -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
             default -> ResponseEntity.ok("Comment added successfully");
         };
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllPosts() {
+        return ResponseEntity.ok(postService.getAllPosts());
     }
 }

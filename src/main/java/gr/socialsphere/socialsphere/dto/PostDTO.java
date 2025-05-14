@@ -5,11 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 
 public class PostDTO {
-    @NotEmpty(message = "Title is required")
-    private String title;
-
-    @NotEmpty(message = "Description is required")
-    private String description;
+    @NotEmpty(message = "Content is required")
+    private String content;
 
     private String streamImageUrl;
 
@@ -19,20 +16,12 @@ public class PostDTO {
     private MultipartFile photo;
 
     // Getters and setters
-    public String getTitle() {
-        return title;
+    public String getContent() {
+        return content;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getStreamImageUrl() {

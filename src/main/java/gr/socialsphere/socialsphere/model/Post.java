@@ -16,11 +16,8 @@ public class Post {
     @Column(name = "post_id")
     private Long postId;
 
-    @Column(name = "title")
-    private String title;
-
-    @Column(name = "description")
-    private String description;
+    @Column(name = "content")
+    private String content;
 
     @Column(name = "image_url")
     private String imageUrl;
@@ -50,13 +47,13 @@ public class Post {
     private Set<Hashtag> hashtags;
 
     public Post() {
-        this.title = "";
-        this.description = "";
+        this.content = "";
         this.imageUrl = "";
         this.date = LocalDateTime.now();
         this.usersLiked = new ArrayList<>();
         this.comments = new ArrayList<>();
         this.hashtags = new HashSet<>();
+        this.date = LocalDateTime.now();
     }
 
     // Getters and setters for all fields
@@ -68,20 +65,12 @@ public class Post {
         this.postId = postId;
     }
 
-    public String getTitle() {
-        return title;
+    public String getContent() {
+        return content;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getImageUrl() {

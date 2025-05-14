@@ -103,8 +103,7 @@ public class UserController {
         List<PostDTO> postDTOs = userPosts.stream().map(post -> {
             PostDTO postDTO = new PostDTO();
             postDTO.setCreatorId(user.getUserId());
-            postDTO.setTitle(post.getTitle());
-            postDTO.setDescription(post.getDescription());
+            postDTO.setContent(post.getContent());
 
             if (!post.getImageUrl().equals(""))
                 postDTO.setStreamImageUrl("/post/fetch-photo/" + post.getPostId());
