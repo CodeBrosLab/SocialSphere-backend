@@ -60,7 +60,9 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("Target user not found"));
 
         follower.follow(targetUser);
-        userRepository.save(follower); // Save to persist the relationship
+        userRepository.save(follower);
+
+        // Save to persist the relationship
         userRepository.save(targetUser);
         return ResponseEntity.ok("Now following user: " + targetUser.getEmail());
     }
@@ -126,8 +128,10 @@ public class UserController {
         String location = updatePrimaryDTO.getLocation();
         List<String> interests = updatePrimaryDTO.getInterests();
         List<String> skills = updatePrimaryDTO.getSkills();
-        String linkedIn = updatePrimaryDTO.getUserLinks().get(0).getUrl();
-        String github = updatePrimaryDTO.getUserLinks().get(1).getUrl();
+        System.out.println(updatePrimaryDTO.getUserLinks().get(0).getUrl());
+        System.out.println(updatePrimaryDTO.getUserLinks().get(1).getUrl());
+        String linkedIn = updatePrimaryDTO.getUserLinks().get(1).getUrl();
+        String github = updatePrimaryDTO.getUserLinks().get(0).getUrl();
 
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -140,12 +144,12 @@ public class UserController {
         existingUser.setSkills(String.join(", ", skills));
 
         // Update user links
-        UserLink linkedInLink = existingUser.getUserLinks().get(0);
+        UserLink linkedInLink = existingUser.getUserLinks().get(1);
         linkedInLink.setUrl(linkedIn);
         linkedInLink.setName("LinkedIn");
         linkedInLink.setUser(existingUser);
 
-        UserLink githubLink = existingUser.getUserLinks().get(1);
+        UserLink githubLink = existingUser.getUserLinks().get(0);
         githubLink.setUrl(github);
         githubLink.setName("GitHub");
         githubLink.setUser(existingUser);
