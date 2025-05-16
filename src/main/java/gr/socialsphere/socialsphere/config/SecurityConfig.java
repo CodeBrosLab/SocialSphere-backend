@@ -31,7 +31,8 @@ public class SecurityConfig {
                                 "/api-ui/**",
                                 "/swagger-ui/**",
                                 "/swagger-resources/*",
-                                "/api/**").permitAll()
+                                "/api/**",
+                                "/post/fetch-photo/**").permitAll()
                         .anyRequest().authenticated()
                 )
 

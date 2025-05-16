@@ -21,10 +21,12 @@ public class PostController {
     private PostService postService;
 
     @GetMapping("/fetch-photo/{postId}")
-    public ResponseEntity<Resource> streamPhoto(@PathVariable Long postId) throws MalformedURLException {
+    public ResponseEntity<Resource> getPostImage(@PathVariable Long postId) throws MalformedURLException {
+        Resource image = postService.fetchPost(postId);
+
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .body(postService.fetchPost(postId));
+                .contentType(MediaType.IMAGE_JPEG) // or detect dynamically
+                .body(image);
     }
 
     @PostMapping(value = "/create-include-photo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
