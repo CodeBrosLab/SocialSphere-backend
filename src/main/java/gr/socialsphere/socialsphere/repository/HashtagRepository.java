@@ -21,5 +21,4 @@ public interface HashtagRepository extends JpaRepository<Hashtag, String> {
     // Fetch all posts containing at least two or more hashtags from the given list
     @Query("SELECT DISTINCT p FROM Post p JOIN p.hashtags h WHERE h.name IN :hashtagNames GROUP BY p HAVING COUNT(h) >= :minHashtags")
     List<Post> findPostsByMultipleHashtags(List<String> hashtagNames, long minHashtags);
-
 }

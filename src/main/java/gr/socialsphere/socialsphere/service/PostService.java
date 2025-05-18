@@ -2,12 +2,10 @@ package gr.socialsphere.socialsphere.service;
 
 import gr.socialsphere.socialsphere.dto.CommentDTO;
 import gr.socialsphere.socialsphere.dto.PostDTO;
-import gr.socialsphere.socialsphere.model.Comment;
-import gr.socialsphere.socialsphere.model.Hashtag;
-import gr.socialsphere.socialsphere.model.Post;
-import gr.socialsphere.socialsphere.model.User;
+import gr.socialsphere.socialsphere.model.*;
 import gr.socialsphere.socialsphere.repository.HashtagRepository;
 import gr.socialsphere.socialsphere.repository.PostRepository;
+import gr.socialsphere.socialsphere.repository.PostViewRepository;
 import gr.socialsphere.socialsphere.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +38,9 @@ public class PostService {
 
     @Autowired
     private HashtagRepository hashtagRepository;
+
+    @Autowired
+    private PostViewRepository postViewRepository;
 
     @Transactional
     public boolean createPost(PostDTO postDTO) throws IOException {
@@ -237,14 +235,61 @@ public class PostService {
         }
     }
 
-    public Resource fetchPost(Long postId) throws MalformedURLException {
-        Post post = postRepository.findById(postId).get();
+    public Resource fetchPost(Long postId, Long userId) throws MalformedURLException {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
         String filepath = post.getImageUrl();
+        if (filepath == null || filepath.isEmpty()) {
+            throw new RuntimeException("Image URL is missing for the post");
+        }
+
         Path path = Paths.get(filepath).toAbsolutePath().normalize();
+        if (!Files.exists(path)) {
+            throw new RuntimeException("Image file does not exist at the specified path");
+        }
 
-        Resource resource = new UrlResource(path.toUri());
 
-        return resource;
+        markPostAsViewed(userId, postId);
+
+        return new UrlResource(path.toUri());
+    }
+
+    public List<Post> getFeedForUser(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<User> followingUsers = user.getFollowing();
+
+        if (followingUsers.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Fetch unseen posts for the user
+        List<Post> unseenPosts = postRepository.findUnseenPostsForFeed(userId, followingUsers);
+
+        // mark fetched posts as seen after returning them
+        unseenPosts.forEach(post -> markPostAsViewed(userId, post.getPostId()));
+
+        return unseenPosts;
+    }
+
+    public void markPostAsViewed(Long userId, Long postId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        boolean alreadyViewed = postViewRepository.existsByUserAndPost(user, post);
+
+        if (!alreadyViewed) {
+
+            PostView postView = new PostView(user, post);
+            postViewRepository.save(postView);
+        }
     }
 
     public List<Post> getAllPosts() {

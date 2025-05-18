@@ -37,22 +37,22 @@ public class SocialsphereApplication implements CommandLineRunner {
 	@Transactional
 	public void run(String... args) throws Exception {
 		// Create five new users
-//		User andreas = new User(
-//				"a@gmail.com",
-//				passwordEncoder.encode("123"),
-//				"Andreas",
-//				"andre",
-//				Role.USER
-//		);
-//		userRepository.save(andreas);
-//
-//		User thanos = new User(
-//				"t@gmail.com",
-//				passwordEncoder.encode("123"),
-//				"Thanos",
-//				"than",
-//				Role.USER
-//		);
-//		userRepository.save(thanos);
+		User andreas = new User(
+				"a@gmail.com",
+				passwordEncoder.encode("123"),
+				"Andreas",
+				"andre",
+				Role.USER
+		);
+		userRepository.save(andreas);
+
+		User thanos = new User(
+				"t@gmail.com",
+				passwordEncoder.encode("123"),
+				"Thanos",
+				"than",
+				Role.USER
+		);
+		userRepository.save(thanos);
 	}
 }

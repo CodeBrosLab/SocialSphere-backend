@@ -2,6 +2,7 @@ package gr.socialsphere.socialsphere.controller;
 
 import gr.socialsphere.socialsphere.dto.CommentDTO;
 import gr.socialsphere.socialsphere.dto.PostDTO;
+import gr.socialsphere.socialsphere.model.Post;
 import gr.socialsphere.socialsphere.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/post")
@@ -20,12 +23,13 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @GetMapping("/fetch-photo/{postId}")
-    public ResponseEntity<Resource> getPostImage(@PathVariable Long postId) throws MalformedURLException {
-        Resource image = postService.fetchPost(postId);
-
+    @GetMapping("/fetch-photo/{userId}/{postId}")
+    public ResponseEntity<Resource> getPostImage(
+            @PathVariable Long userId,
+            @PathVariable Long postId) throws MalformedURLException {
+        Resource image = postService.fetchPost(postId, userId);
         return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG) // or detect dynamically
+                .contentType(MediaType.IMAGE_JPEG)
                 .body(image);
     }
 
@@ -85,6 +89,17 @@ public class PostController {
             default -> ResponseEntity.ok("Comment added successfully");
         };
     }
+
+    @GetMapping("/feed/{userId}")
+    public ResponseEntity<List<Post>> getFeed(@PathVariable Long userId) {
+        List<Post> feed = postService.getFeedForUser(userId);
+
+        // Mark each post in the feed as "viewed"
+        feed.forEach(post -> postService.markPostAsViewed(userId, post.getPostId()));
+
+        return ResponseEntity.ok(feed);
+    }
+
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllPosts() {
