@@ -27,12 +27,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/ws-chat/**", "/topic/**", "/app/**", "/chat/**").permitAll()
                         .requestMatchers("/api/v1/auth/**",
                                 "/api-ui/**",
                                 "/swagger-ui/**",
                                 "/swagger-resources/*",
                                 "/api/**",
                                 "/post/fetch-photo/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
 
