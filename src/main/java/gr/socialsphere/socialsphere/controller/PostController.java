@@ -6,6 +6,7 @@ import gr.socialsphere.socialsphere.model.Post;
 import gr.socialsphere.socialsphere.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/post")
@@ -35,8 +34,6 @@ public class PostController {
 
     @PostMapping(value = "/create-include-photo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> createPostWithPhoto(@ModelAttribute PostDTO postDTO) throws IOException {
-        System.out.println("Hello");
-        System.out.println(postDTO.getContent());
         if (postService.createPost(postDTO))
             return ResponseEntity.status(HttpStatus.CREATED).body("Post created successfully");
 
@@ -53,7 +50,6 @@ public class PostController {
 
     @PutMapping("/edit/{postId}")
     public ResponseEntity<String> editPost(@PathVariable Long postId, @RequestBody PostDTO postDTO) {
-
         if (postService.editPost(postId, postDTO)) {
             return ResponseEntity.ok("Post updated successfully");
         }
@@ -62,7 +58,6 @@ public class PostController {
 
     @DeleteMapping("/delete/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable Long postId, @RequestParam Long creatorId) {
-
         return switch (postService.deletePost(postId, creatorId)) {
             case "NOT_FOUND" -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found");
             case "FORBIDDEN" -> ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not allowed to delete this post");
@@ -72,7 +67,6 @@ public class PostController {
 
     @PostMapping("/{postId}/like")
     public ResponseEntity<String> likePost(@PathVariable Long postId, @RequestParam Long userId) {
-
         if (postService.toggleLikePost(postId, userId)) {
             return ResponseEntity.ok("Post liked/unliked successfully");
         }
@@ -81,7 +75,6 @@ public class PostController {
 
     @PostMapping("/comment")
     public ResponseEntity<String> commentOnPost(@RequestBody CommentDTO commentDTO) {
-
         return switch (postService.commentOnPost(commentDTO)) {
             case "EMPTY" -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Comment content cannot be empty");
             case "POST_NOT_FOUND" -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found");
@@ -91,18 +84,11 @@ public class PostController {
     }
 
     @GetMapping("/feed/{userId}")
-    public ResponseEntity<List<Post>> getFeed(@PathVariable Long userId) {
-        List<Post> feed = postService.getFeedForUser(userId);
-
-        // Mark each post in the feed as "viewed"
-        feed.forEach(post -> postService.markPostAsViewed(userId, post.getPostId()));
-
+    public ResponseEntity<Page<Post>> getFeed(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<Post> feed = postService.getFeedForUser(userId, page, size);
         return ResponseEntity.ok(feed);
-    }
-
-
-    @GetMapping("/all")
-    public ResponseEntity<?> getAllPosts() {
-        return ResponseEntity.ok(postService.getAllPosts());
     }
 }

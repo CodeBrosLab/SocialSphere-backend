@@ -13,6 +13,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
+// Add these imports at the top
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -256,24 +261,24 @@ public class PostService {
         return new UrlResource(path.toUri());
     }
 
-    public List<Post> getFeedForUser(Long userId) {
-
+    // Update the getFeedForUser method
+    public Page<Post> getFeedForUser(Long userId, int page, int size) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<User> followingUsers = user.getFollowing();
 
         if (followingUsers.isEmpty()) {
-            return Collections.emptyList();
+            return Page.empty();
         }
 
-        // Fetch unseen posts for the user
-        List<Post> unseenPosts = postRepository.findUnseenPostsForFeed(userId, followingUsers);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findUnseenPostsForFeed(userId, followingUsers, pageable);
 
-        // mark fetched posts as seen after returning them
-        unseenPosts.forEach(post -> markPostAsViewed(userId, post.getPostId()));
+        // Mark fetched posts as viewed
+        posts.getContent().forEach(post -> markPostAsViewed(userId, post.getPostId()));
 
-        return unseenPosts;
+        return posts;
     }
 
     public void markPostAsViewed(Long userId, Long postId) {
