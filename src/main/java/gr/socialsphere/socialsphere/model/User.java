@@ -1,6 +1,7 @@
 package gr.socialsphere.socialsphere.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -65,6 +66,7 @@ public class User implements UserDetails {
     private List<UserLink> userLinks;
 
     @ManyToMany
+    @JsonIdentityReference(alwaysAsId = true)
     //@JsonManagedReference
     @JoinTable(
             name = "user_followers",
@@ -74,6 +76,7 @@ public class User implements UserDetails {
     private List<User> followers;
 
     @ManyToMany(mappedBy = "followers")
+    @JsonIdentityReference(alwaysAsId = true)
     private List<User> following;
 
     public User() {
