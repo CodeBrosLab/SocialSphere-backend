@@ -49,42 +49,42 @@ public class PostService {
 
     @Transactional
     public boolean createPost(PostDTO postDTO) throws IOException {
-
         Optional<User> creator = userRepository.findById(postDTO.getCreatorId());
-
-        if (creator.isEmpty())
-            return false;
+        if (creator.isEmpty()) return false;
 
         Post post = new Post();
         post.setContent(postDTO.getContent());
-        post.setImageUrl(""); // Check if a photo exists and change the path later on
+        post.setImageUrl("");
         post.setDate(LocalDateTime.now());
         post.setCreator(creator.get());
 
         Set<Hashtag> hashtags = extractAndSaveHashtags(postDTO.getContent(), post);
         post.setHashtags(hashtags);
 
-        // Store the photo if exists, otherwise store a post with text only
+        // Handle photo upload if exists
         if (postDTO.getPhoto() != null) {
-            // Get the original name of the file that user uploaded and rename it. I keep the file extension as it is
             String profileName = post.getCreator().getProfileName();
             String photoFilename = postDTO.getPhoto().getOriginalFilename();
             String fileExtension = photoFilename.substring(photoFilename.lastIndexOf("."));
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmmss");
             String postDate = LocalDate.now().toString() + LocalTime.now().format(formatter);
-
             photoFilename = profileName + "-" + postDate + fileExtension;
 
-            // Save the file
+            // Create directory if it doesn't exist
             String filePath = "uploads/" + profileName;
             File userFolder = new File(filePath);
+            if (!userFolder.exists()) {
+                boolean created = userFolder.mkdirs();
+                if (!created) {
+                    throw new IOException("Failed to create directory: " + filePath);
+                }
+            }
 
-            // Get the photo as bytes and store it locally
+            // Save the file
             byte[] bytes = postDTO.getPhoto().getBytes();
-
-            File f = new File(userFolder, photoFilename);
-            Files.write(f.toPath(), bytes);
+            Path path = Paths.get(filePath, photoFilename);
+            Files.write(path, bytes);
 
             post.setImageUrl(filePath + "/" + photoFilename);
         }
