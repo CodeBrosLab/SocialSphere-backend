@@ -1,5 +1,6 @@
 package gr.socialsphere.socialsphere.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -22,6 +23,7 @@ public class Comment {
     @Column(name = "date", nullable = false)
     private LocalDateTime date;
 
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User userCommented;
