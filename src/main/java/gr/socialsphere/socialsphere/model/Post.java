@@ -1,5 +1,6 @@
 package gr.socialsphere.socialsphere.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -29,6 +30,7 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User creator;
 
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToMany
     @JoinTable(
             name = "post_likes",
