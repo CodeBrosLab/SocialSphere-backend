@@ -1,28 +1,25 @@
-version: "3.9"
+version: '3.8'
 
 services:
-  web:
+  db:
+    image: postgres:16
+    container_name: socialsphere-db
+    environment:
+      POSTGRES_DB: socialspheredb
+      POSTGRES_USER: spring
+      POSTGRES_PASSWORD: spring
+    ports:
+      - "5433:5432"
+
+  app:
     build: .
+    container_name: socialsphere-app
     ports:
       - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_NAME: socialspheredb
+      DB_USER: spring
+      DB_PASSWORD: spring
     depends_on:
       - db
-    environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=socialspheredb
-
-
-  db:
-    image: postgres:latest
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=spring
-      - POSTGRES_PASSWORD=spring
-      - POSTGRES_DB=socialspheredb
-    volumes:
-      - db_data:/var/lib/postgresql/data
-
-volumes:
-  db_data:
