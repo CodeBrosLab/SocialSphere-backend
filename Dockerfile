@@ -1,10 +1,12 @@
+# ---- Stage 1: Build ----
+FROM maven:3.9.4-eclipse-temurin-17 AS builder
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
+
+# ---- Stage 2: Run ----
 FROM openjdk:17-jdk-slim
-
-# Copy the JAR file into the container
-COPY target/socialsphere-0.0.1-SNAPSHOT.jar /app.jar
-
-# Expose the port your Spring Boot app is listening on (usually 8080)
+WORKDIR /app
+COPY --from=builder /app/target/socialsphere-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
-
-# Specify the command to run when the container starts
-CMD ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
