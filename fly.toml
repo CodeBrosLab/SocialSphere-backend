@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for socialsphere-backend on 2025-05-31T12:26:46Z
+# fly.toml app configuration file generated for socialsphere-backend on 2025-05-31T18:16:06+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -13,7 +13,7 @@ primary_region = 'fra'
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
   processes = ['app']
 
 [[vm]]
