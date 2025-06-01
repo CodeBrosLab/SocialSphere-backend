@@ -27,9 +27,6 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private UserLinkRepository userLinkRepository;
-
     private Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/all")
@@ -120,49 +117,7 @@ public class UserController {
 
     @PutMapping("/update-primary")
     public ResponseEntity<String> update(@RequestBody UpdatePrimaryDTO updatePrimaryDTO) {
-        // Should be extracted in a service
-        Long userId = updatePrimaryDTO.getUserId();
-        String profileName = updatePrimaryDTO.getProfileName();
-        String displayName = updatePrimaryDTO.getDisplayName();
-        String bio = updatePrimaryDTO.getBio();
-        String location = updatePrimaryDTO.getLocation();
-        List<String> interests = updatePrimaryDTO.getInterests();
-        List<String> skills = updatePrimaryDTO.getSkills();
-        System.out.println(updatePrimaryDTO.getUserLinks().get(0).getUrl());
-        System.out.println(updatePrimaryDTO.getUserLinks().get(1).getUrl());
-        String linkedIn = updatePrimaryDTO.getUserLinks().get(1).getUrl();
-        String github = updatePrimaryDTO.getUserLinks().get(0).getUrl();
-
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        existingUser.setProfileName(profileName);
-        existingUser.setDisplayName(displayName);
-        existingUser.setBio(bio);
-        existingUser.setLocation(location);
-        existingUser.setInterests(String.join(", ", interests));
-        existingUser.setSkills(String.join(", ", skills));
-
-        // Update user links
-        UserLink linkedInLink = existingUser.getUserLinks().get(1);
-        linkedInLink.setUrl(linkedIn);
-        linkedInLink.setName("LinkedIn");
-        linkedInLink.setUser(existingUser);
-
-        UserLink githubLink = existingUser.getUserLinks().get(0);
-        githubLink.setUrl(github);
-        githubLink.setName("GitHub");
-        githubLink.setUser(existingUser);
-
-
-        // Remove old links and add new ones
-        userLinkRepository.deleteAll(existingUser.getUserLinks());
-        List<UserLink> userLinks = new ArrayList<>();
-        userLinks.add(linkedInLink);
-        userLinks.add(githubLink);
-        existingUser.setUserLinks(userLinks);
-
-        userRepository.save(existingUser);
+        userService.updateUserProfile(updatePrimaryDTO);
         return ResponseEntity.ok("User info updated successfully");
     }
 
