@@ -18,7 +18,7 @@ import java.util.List;
 
 @SpringBootApplication
 @EnableTransactionManagement
-public class SocialsphereApplication implements CommandLineRunner {
+public class SocialsphereApplication {
 	@Autowired
 	private UserRepository userRepository;
 
@@ -35,58 +35,5 @@ public class SocialsphereApplication implements CommandLineRunner {
 		SpringApplication.run(SocialsphereApplication.class, args);
 	}
 
-	@Override
-	@Transactional
-	public void run(String... args) throws Exception {
-		/*// Create five new users
-		User andreas = new User(
-				"a@gmail.com",
-				passwordEncoder.encode("123"),
-				"Andreas",
-				"andre",
-				Role.USER
-		);
 
-		UserLink linkedInLink = new UserLink();
-		linkedInLink.setUser(andreas);
-		linkedInLink.setUrl("");
-		linkedInLink.setName("LinkedIn");
-
-		UserLink githubLink = new UserLink();
-		githubLink.setUser(andreas);
-		githubLink.setUrl("");
-		githubLink.setName("Github");
-
-		List<UserLink> andreasLinks = new ArrayList<>();
-		andreasLinks.add(linkedInLink);
-		andreasLinks.add(githubLink);
-
-		andreas.setUserLinks(andreasLinks);
-		userRepository.save(andreas);
-
-		User thanos = new User(
-				"t@gmail.com",
-				passwordEncoder.encode("123"),
-				"Thanos",
-				"than",
-				Role.USER
-		);
-
-		UserLink linkedInLink2 = new UserLink();
-		linkedInLink2.setUser(thanos);
-		linkedInLink2.setUrl("");
-		linkedInLink2.setName("LinkedIn");
-
-		UserLink githubLink2 = new UserLink();
-		githubLink2.setUser(thanos);
-		githubLink2.setUrl("");
-		githubLink2.setName("Github");
-
-		List<UserLink> thanosLinks = new ArrayList<>();
-		thanosLinks.add(linkedInLink2);
-		thanosLinks.add(githubLink2);
-
-		thanos.setUserLinks(thanosLinks);
-		userRepository.save(thanos);*/
-	}
 }

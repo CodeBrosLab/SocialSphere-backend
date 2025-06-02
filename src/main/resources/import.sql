@@ -11,3 +11,9 @@ INSERT INTO user_link (id, name, url, user_id) VALUES (2, 'LinkedIn', 'https://l
 INSERT INTO user_link (id, name, url, user_id) VALUES (3, 'GitHub', 'https://github.com/user2', 2);
 
 INSERT INTO user_link (id, name, url, user_id) VALUES (4, 'LinkedIn', 'https://linkedin.com/in/user2', 2);
+
+-- === IMPORTANT: Reset sequences after manual inserts ===
+-- Reset sequence for users table
+SELECT setval('users_user_id_seq', (SELECT MAX(user_id) FROM users), true);
+-- Reset sequence for user_link table
+SELECT setval('user_link_id_seq', (SELECT MAX(id) FROM user_link), true);
