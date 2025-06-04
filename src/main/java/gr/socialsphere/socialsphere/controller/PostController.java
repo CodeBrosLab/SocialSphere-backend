@@ -87,8 +87,16 @@ public class PostController {
     public ResponseEntity<Page<Post>> getFeed(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size
+            ) {
         Page<Post> feed = postService.getFeedForUser(userId, page, size);
         return ResponseEntity.ok(feed);
+    }
+
+    @PostMapping("feed/{userid}/{postId}/mark-as-seen")
+    public ResponseEntity<String> markAsSeen(@PathVariable Long userid,
+                                             @PathVariable Long postId) {
+        postService.markPostAsViewed(userid, postId);
+        return ResponseEntity.ok("Post marked as seen successfully");
     }
 }

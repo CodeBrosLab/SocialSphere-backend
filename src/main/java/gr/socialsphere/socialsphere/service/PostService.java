@@ -255,7 +255,6 @@ public class PostService {
             throw new RuntimeException("Image file does not exist at the specified path");
         }
 
-
         markPostAsViewed(userId, postId);
 
         return new UrlResource(path.toUri());
@@ -274,10 +273,6 @@ public class PostService {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findUnseenPostsForFeed(userId, followingUsers, pageable);
-
-        // Mark fetched posts as viewed
-        posts.getContent().forEach(post -> markPostAsViewed(userId, post.getPostId()));
-
         return posts;
     }
 
